@@ -244,8 +244,8 @@ If you use XCT in research or production, please cite:
 ```bibtex
 @misc{xct2025,
   title={XCT: Execution Control Transfer for Safe LLM Integration},
-  author={[Your names]},
-  year={2025},
+  author={[André Luís Torres Pereira]},
+  year={2026},
   url={https://github.com/Tech-Tweakers/xct}
 }
 ```
