@@ -1,73 +1,80 @@
 # XCT — Execution Control Transfer
 
-**A protocol for safe LLM integration in production systems.**
+**A principle for safe LLM integration in production systems, expressed as a protocol.**
 
-XCT inverts the sovereignty model: the model *operates*, but does not *execute*.  
+XCT inverts the sovereignty model: the model operates, but does not execute.  
 Control remains with deterministic tools.
 
 ---
 
 ## What is XCT?
 
-XCT emerged from real-world deployment of LLMs in high-stakes operational environments where reliability isn't optional.
+XCT emerged from real production use of LLMs in high-risk operational contexts.
 
-Traditional approaches—like the Model Context Protocol (MCP)—delegate executive authority to the model:
-- The model decides, plans, and executes
-- Tools extend the model's agency
-- The system reacts to model choices
+Traditional approaches (like MCP) delegate **executive authority** to the model:
+- The model decides
+- The model plans  
+- The model executes
+- Tools are extensions of the model's will
 
-**XCT inverts this paradigm:**
+**XCT inverts this:**
 - The model **proposes** actions
-- The system **validates** proposals  
+- The system **validates** proposals
 - Tools **execute** deterministically
-- Results (including errors) return as **structured signals**
+- Results (including errors) return as **first-class signals**
 - The model **reacts** and adjusts
 
-The model becomes a supervised operator within a controlled loop, not an autonomous executor.
+The model becomes an **operator**, not an autonomous agent.
 
 ---
 
 ## Why XCT?
 
-### The Problem
+**Problem:** Autonomous LLM execution creates operational risk:
+- Unintended state mutations
+- Unauditable decision chains
+- Non-deterministic failures
+- Difficult rollback
 
-Autonomous LLM execution introduces systemic operational risk:
-- **Unintended state mutations** — unpredictable side effects in live systems
-- **Non-auditable decision chains** — opaque reasoning, impossible to debug
-- **Non-deterministic failures** — unreproducible error modes
-- **Difficult rollback paths** — cascading changes are hard to undo
+**Solution:** Move control outside the model:
+- Tools are sovereign executors
+- Errors are signals, not exceptions
+- The loop is external and interruptible
+- State changes are traceable
 
-In low-risk contexts, this may be acceptable.  
-In production infrastructure, **it is not**.
+**Core principle:**  
+> Decision is cheap. Execution is expensive. Keep them separate.
 
-### The Solution
+---
 
-**Relocate authority** from model to system:
-- Tools are **sovereign executors** with built-in validation
-- Errors are **signals**, not exceptions—they inform the next step
-- The execution loop is **external and interruptible**
-- State transitions are **traceable and auditable**
+## When to use XCT
 
-> **Core principle:** Decision is cheap. Execution is expensive. Keep them separate.
+✅ Production systems with non-trivial failure cost  
+✅ Infrastructure automation (deploy, scale, delete)  
+✅ Financial operations  
+✅ Any context where "undo" is expensive or impossible  
+
+❌ Rapid prototyping  
+❌ Creative exploration  
+❌ Low-stakes experimentation  
+
+**If the cost of error exceeds the value of speed, use XCT.**
 
 ---
 
 ## Protocol Overview
 
-XCT follows a simple request/response contract with clear separation of concerns.
+XCT uses a simple request/response contract:
 
-### Model Output
+### Model returns ONE of:
 
 **1. Propose next action:**
 ```json
 {
   "next_step": {
     "tool": "fs.write",
-    "arguments": {
-      "path": "config/app.yaml",
-      "content": "..."
-    },
-    "goal": "Update deployment configuration for blue-green switch"
+    "arguments": {"path": "file.txt", "content": "..."},
+    "goal": "why this step is needed"
   }
 }
 ```
@@ -76,20 +83,17 @@ XCT follows a simple request/response contract with clear separation of concerns
 ```json
 {
   "done": true,
-  "message": "Successfully migrated 47 user records to new schema"
+  "message": "what was accomplished"
 }
 ```
 
-### System Response
+### System responds with:
 
 **Success:**
 ```json
 {
   "status": "success",
-  "result": { 
-    "bytes_written": 2048,
-    "checksum": "a3f5b..."
-  }
+  "result": { ... }
 }
 ```
 
@@ -97,98 +101,170 @@ XCT follows a simple request/response contract with clear separation of concerns
 ```json
 {
   "status": "error",
-  "message": "fs.write failed: insufficient permissions for /etc/config",
-  "code": "PERMISSION_DENIED"
+  "message": "fs.write failed: permission denied"
 }
 ```
 
-The model reads the response and adapts.  
-**Error is information, not failure.**
+**The model reads the response and adjusts.**
+
+Error is not failure — it's **information**.
 
 ---
 
 ## See XCT in Action
 
-<div align="center">
-  <video width="800" controls>
-    <source src="assets/xct-demo-01.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
+<video width="800" controls>
+  <source src="./assets/xct-demo-01.mp4" type="video/mp4">
+  Your browser does not support the video tag. [Watch Demo](./assets/xct-demo-01.mp4)
+</video>
 
-  **Watch how XCT maintains control while the model operates safely in production.**
-</div>
+**Watch how XCT maintains control while the model operates safely in a cluster kubernetes.**
+
+The video demonstrates real XCT execution running inside a Kubernetes cluster:
+model proposal → system validation → tool execution → state persistence.
 
 ---
 
 ## Core Rules
 
-1. **No action without explicit tool invocation** — the model cannot execute directly
-2. **One step per iteration** — atomic operations enable rollback and auditing
-3. **The model is stateless between calls** — context is external, not embedded
-4. **Errors are first-class signals** — they guide adaptation, not halt execution
-5. **The system has veto power** — validation happens before execution
+1. **No action without explicit tool invocation**  
+   Describing an action is forbidden. Only real tool calls mutate state.
+
+2. **One step per iteration**  
+   The model returns one decision. The system controls the loop.
+
+3. **The model is stateless between calls**  
+   Context is provided externally. The model doesn't "remember" — the system does.
+
+4. **Errors are first-class signals**  
+   Failed tool execution returns structured error. The model reacts accordingly.
+
+5. **The system has veto power**  
+   Even if the model proposes valid syntax, the system can refuse execution.
 
 ---
 
-## Design Philosophy
+## Comparison with MCP
 
-XCT is built on three principles:
+| Dimension | MCP | XCT |
+|-----------|-----|-----|
+| **Loop control** | Model | System |
+| **Execution authority** | Model | Tools |
+| **Error handling** | Exception | Signal |
+| **State ownership** | Model context | External |
+| **Autonomy** | High | Contained |
+| **Use case** | Flexible agents | Production systems |
 
-**1. Separation of Concerns**  
-Thinking (model) and doing (tools) are separate responsibilities.
+**XCT is not "better MCP" — it solves a different problem.**
 
-**2. Fail-Safe Defaults**  
-Every action requires explicit approval. Uncertainty defaults to no-op.
-
-**3. Observability First**  
-Every state transition is logged, traceable, and reversible.
+MCP optimizes for capability.  
+XCT optimizes for **reliability**.
 
 ---
 
-## Use Cases
+## Example: Safe File Creation
 
-XCT applies to environments where mistakes are costly:
+**User request:** "Create config.json"
 
-- **Infrastructure automation** — cloud provisioning, configuration management
-- **Database migrations** — schema changes, data transformations  
-- **Financial systems** — transaction processing, reconciliation
-- **Healthcare workflows** — patient data handling, clinical decision support
-- **Compliance-heavy domains** — audit trails are mandatory
+**Traditional autonomous flow:**
+```
+Model: I'll create the file
+[file created]
+[oops, wrong directory]
+[tries to undo]
+[partial state corruption]
+```
+
+**XCT flow:**
+```json
+// Step 1: Model proposes
+{"next_step": {"tool": "fs.write", "arguments": {...}}}
+
+// Step 2: System validates path, permissions, disk space
+// Returns: {"status": "error", "message": "path not allowed"}
+
+// Step 3: Model reads error and adjusts
+{"next_step": {"tool": "fs.write", "arguments": {"path": "./config.json", ...}}}
+
+// Step 4: System executes
+{"status": "success"}
+
+// Step 5: Model signals completion
+{"done": true}
+```
+
+**No state was mutated until validation passed.**
+
+---
+
+## Project Status
+
+🚧 **Early stage — in active development**
+
+- [x] Core protocol design
+- [x] Initial implementations (TypeScript)
+- [x] Production validation
+- [ ] Formal specification
+- [ ] Multi-language implementations
+- [ ] Paper publication
+
+---
+
+## Get Started
+
+See [`protocol/spec.md`](./protocol/spec.md) for formal specification.
+
+See [`implementations/`](./implementations/) for reference code.
+
+See [`docs/philosophy.md`](./docs/philosophy.md) for deeper rationale.
 
 ---
 
 ## Contributing
 
-XCT is an open protocol. Contributions are welcome:
-- Protocol extensions and improvements
-- Reference implementations in different languages
-- Case studies from production deployments
+XCT is a principle, not a monopoly.
 
-See `CONTRIBUTING.md` for guidelines.
+We welcome:
+- Alternative implementations
+- Protocol extensions
+- Use case documentation
+- Critical analysis
+
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for guidelines.
+
+---
+
+## Origin Story
+
+XCT was born from an attempt to implement MCP in production.
+
+During implementation, we discovered that **the problem wasn't tools** — it was **where authority lived**.
+
+This led to an architectural inversion: keep tools, move control.
+
+The result survived real operational pressure. We're documenting it so others can benefit.
 
 ---
 
 ## License
 
-Apache 2.0
+[Apache 2.0](./LICENSE) — use freely, credit clearly.
 
 ---
 
 ## Citation
+
+If you use XCT in research or production, please cite:
 ```bibtex
-@misc{xct2026,
+@misc{xct2025,
   title={XCT: Execution Control Transfer for Safe LLM Integration},
-  author={Pereira, André Luís Torres},
+  author={[André Luís Torres Pereira]},
   year={2026},
-  url={https://github.com/Tech-Tweakers/xct},
-  note={A protocol for supervised LLM execution in production systems}
+  url={https://github.com/Tech-Tweakers/xct}
 }
 ```
 
 ---
 
-## Acknowledgments
-
-XCT was developed through lessons learned deploying LLMs in production environments where downtime carries real cost. Thanks to the teams who provided feedback during early iterations.
-
-**Questions?** Open an issue or start a discussion.
+**XCT is engineering, not hype.**  
+**It works because it limits, not because it promises.**
