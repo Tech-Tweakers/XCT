@@ -107,6 +107,19 @@ The model reads the response and adapts.
 
 ---
 
+## See XCT in Action
+
+<div align="center">
+  <video width="800" controls>
+    <source src="assets/xct-demo-01.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  **Watch how XCT maintains control while the model operates safely in production.**
+</div>
+
+---
+
 ## Core Rules
 
 1. **No action without explicit tool invocation** — the model cannot execute directly
