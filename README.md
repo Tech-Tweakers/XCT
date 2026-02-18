@@ -2,8 +2,10 @@
 
 **A principle for safe LLM integration in production systems, expressed as a protocol.**
 
-XCT inverts the sovereignty model: the model operates, but does not execute.  
+XCT inverts the sovereignty model: the model operates, but does not execute.
 Control remains with deterministic tools.
+
+🤖 **Ready-to-use model:** [XCT-Qwen3-4B-Q5 on HuggingFace](https://huggingface.co/tech-tweakers/XCT-Qwen3-4B-v0.1.0-q5_k)
 
 ---
 
