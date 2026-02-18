@@ -121,23 +121,29 @@ This demonstrates the complete flow:
 <details>
 <summary>📸 View step-by-step execution sequence (6 screenshots)</summary>
 
-**Step 1: System Initialization**
-![](assets/images/xct-demo-eks-01.png)
+**Step 1: Agent Introduction**
+Polaris XCT Executor introduces itself as a deterministic agent on the XCT protocol. It describes its capabilities (filesystem, shell, Python, Kubernetes operations) while the cluster shows zero running pods.
+![Agent Introduction - Executor self-describes capabilities and toolset](assets/images/xct-demo-eks-01.png)
 
-**Step 2: Context Loading**
-![](assets/images/xct-demo-eks-02.png)
+**Step 2: Cluster Status Check**
+User requests cluster health. k8s.cluster.status confirms control plane is live at 127.0.0.1:6443 with CoreDNS and Metrics-server operational. User then issues command to create 3 deployments (nginx, mongodb, redis).
+![Cluster Status - Control plane live, user issues deployment creation command](assets/images/xct-demo-eks-02.png)
 
-**Step 3: Model Proposal**
-![](assets/images/xct-demo-eks-03.png)
+**Step 3: Three Deployments Created**
+Sequential k8s.deployments.create calls provision nginx, mongodb, and redis. K9s terminal shows pods transitioning to ContainerCreating state. Agent confirms all three created successfully with latest images.
+![Deployments Created - Three k8s.deployments.create calls in sequence, pods initializing](assets/images/xct-demo-eks-03.png)
 
-**Step 4: System Validation**
-![](assets/images/xct-demo-eks-04.png)
+**Step 4: Post-Deploy Status Check**
+k8s.deployments.list reports nginx as ready (1/1), while mongodb and redis still initializing (0 ready). Agent recommends checking logs. User then requests nginx removal.
+![Status Check - nginx ready, mongodb/redis initializing, user requests nginx removal](assets/images/xct-demo-eks-04.png)
 
-**Step 5: Tool Execution**
-![](assets/images/xct-demo-eks-05.png)
+**Step 5: Nginx Removed, MongoDB & Redis Healthy**
+nginx deleted via k8s.deployments.delete. Follow-up k8s.deployments.list confirms both mongodb and redis fully running (1/1). Two pods now visible in K9s terminal.
+![Cleanup Step 1 - nginx deleted, mongodb and redis healthy at 1/1 replicas](assets/images/xct-demo-eks-05.png)
 
-**Step 6: State Persistence & Loop**
-![](assets/images/xct-demo-eks-06.png)
+**Step 6: Full Cleanup**
+User orders removal of all remaining deployments. Two k8s.deployments.delete calls wipe mongodb and redis. K9s terminal returns to zero pods — cluster fully clean.
+![Full Cleanup - All deployments deleted, cluster returns to zero pods state](assets/images/xct-demo-eks-06.png)
 
 </details>
 
