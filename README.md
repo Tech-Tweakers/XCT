@@ -113,15 +113,33 @@ Error is not failure — it's **information**.
 
 ## See XCT in Action
 
-<video width="800" controls>
-  <source src="./assets/xct-demo-01.mp4" type="video/mp4">
-  Your browser does not support the video tag. [Watch Demo](./assets/xct-demo-01.mp4)
-</video>
+▶️ **[Watch the live execution demo](assets/videos/xct-demo-eks-01.mp4)** — Real XCT running inside a Kubernetes cluster.
 
-**Watch how XCT maintains control while the model operates safely in a cluster kubernetes.**
+This demonstrates the complete flow:
+**Model Proposal → System Validation → Tool Execution → State Persistence**
 
-The video demonstrates real XCT execution running inside a Kubernetes cluster:
-model proposal → system validation → tool execution → state persistence.
+<details>
+<summary>📸 View step-by-step execution sequence (6 screenshots)</summary>
+
+**Step 1: System Initialization**
+![](assets/images/xct-demo-eks-01.png)
+
+**Step 2: Context Loading**
+![](assets/images/xct-demo-eks-02.png)
+
+**Step 3: Model Proposal**
+![](assets/images/xct-demo-eks-03.png)
+
+**Step 4: System Validation**
+![](assets/images/xct-demo-eks-04.png)
+
+**Step 5: Tool Execution**
+![](assets/images/xct-demo-eks-05.png)
+
+**Step 6: State Persistence & Loop**
+![](assets/images/xct-demo-eks-06.png)
+
+</details>
 
 ---
 
