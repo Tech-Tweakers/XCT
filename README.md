@@ -5,7 +5,7 @@
 XCT inverts the sovereignty model: the model operates, but does not execute.
 Control remains with deterministic tools.
 
-🤖 **Ready-to-use model:** [XCT-Qwen3-4B-Q5 on HuggingFace](https://huggingface.co/tech-tweakers/XCT-Qwen3-4B-v0.1.0-q5_k)
+🤖 **Ready-to-use model:** [XCT-Qwen3-4B on HuggingFace](https://huggingface.co/tech-tweakers/XCT-Qwen3-4B)
 
 ⚡ **Production engine:** [Polaris-Core — C++ binding for llama.cpp](https://github.com/Tech-Tweakers/polaris-core)
 
